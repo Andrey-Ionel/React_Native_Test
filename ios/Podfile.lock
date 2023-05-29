@@ -540,7 +540,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 2cf8ea3753afb81dfcc386613dbbb0b5d155fb34
   React-jsinspector: 0eda09e9cf22bbb5dbb1d23143b03a31acf37d67
   React-logger: 5997ab008583826c10ffe4e1ff990363e975639d
-  react-native-geolocation: e7c11139f1c0543d65a74e248b5c1b8dd54a4e75
+  react-native-geolocation: 7383cbe9fa75b168bbbe40b566070fd0b44d30d6
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   React-perflogger: ad1416a715d86b32f456e5d0aed99c3b52f1de37
   React-RCTActionSheet: cbf7c6a953982562418ee72a1084ff7b9447b558

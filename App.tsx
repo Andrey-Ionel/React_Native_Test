@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   PermissionsAndroid,
   Platform,
   SafeAreaView,
   ScrollView,
   View,
+  Text,
 } from 'react-native';
 
 import Geolocation from 'react-native-geolocation-service';
@@ -13,11 +14,7 @@ const App: () => React.ReactNode = () => {
   const requestLocationPermission = async (): Promise<boolean> => {
     try {
       Geolocation.requestAuthorization('whenInUse').then(status => {
-        if (status === 'granted') {
-          return true;
-        } else {
-          return false;
-        }
+        return status === 'granted';
       });
     } catch (e) {
       console.log(e);
@@ -60,7 +57,7 @@ const App: () => React.ReactNode = () => {
         ? requestLocationPermission().catch(error => console.log(error))
         : requestLocationPermissionAndroid().catch(error => console.log(error));
 
-    if (!!isAllowed) {
+    if (isAllowed) {
       Geolocation.getCurrentPosition(
         position => {
           console.log(50, 'zxc', 'position', position);
@@ -88,19 +85,10 @@ const App: () => React.ReactNode = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{backgroundColor: 'red'}}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={{backgroundColor: 'red'}}
-        >
-        <View style={{backgroundColor: 'white'}}>
-            <Text>{'HELLO'}</Text>
-        </View>
-        <View style={{backgroundColor: 'white'}}>
-            <Text>{'HELLO'}</Text>
-        </View>
-        <View style={{backgroundColor: 'white'}}>
-            <Text>{'HELLO'}</Text>
+    <SafeAreaView style={{ backgroundColor: 'red' }}>
+      <ScrollView contentInsetAdjustmentBehavior={'automatic'}>
+        <View>
+          <Text>{'HELLO'}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const rootDir = path.join(__dirname, '../App');
+const rootDir = path.join(__dirname, '../React_Native_Test');
 const webpackEnv = process.env.NODE_ENV || 'development';
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(tsx|ts|jsx|js|mjs)$/,
+        test: /\.(tsx|ts|jsx|js|mjs|png|svg|jpg|jpeg)$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
       },

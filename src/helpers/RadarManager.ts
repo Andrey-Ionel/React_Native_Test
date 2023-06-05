@@ -1,5 +1,7 @@
 import Geolocation, { GeoCoordinates } from 'react-native-geolocation-service';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Alert, PermissionsAndroid } from 'react-native';
+
+import { isAndroid } from './common';
 
 const requestLocationPermissionAndroid = async (): Promise<boolean> => {
   try {
@@ -12,7 +14,7 @@ const requestLocationPermissionAndroid = async (): Promise<boolean> => {
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
       },
-    ).then(status => status === 'granted');
+    ).then(status => status === 'granted' || status === 'denied');
   } catch (e) {
     return false;
   }
@@ -21,7 +23,7 @@ const requestLocationPermissionAndroid = async (): Promise<boolean> => {
 const requestLocationPermissionIos = async (): Promise<boolean> => {
   try {
     return await Geolocation.requestAuthorization('whenInUse').then(
-      status => status === 'granted',
+      status => status === 'granted' || status === 'denied',
     );
   } catch (e) {
     return false;
@@ -30,7 +32,7 @@ const requestLocationPermissionIos = async (): Promise<boolean> => {
 
 const getPermission = async (): Promise<boolean> => {
   try {
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       return await requestLocationPermissionAndroid().then(allowed => allowed);
     } else {
       return await requestLocationPermissionIos().then(allowed => allowed);
@@ -40,7 +42,10 @@ const getPermission = async (): Promise<boolean> => {
   }
 };
 
-const getCoordinates = (): Promise<GeoCoordinates> => {
+const getCoordinates = (isButtonPressed?: boolean): Promise<GeoCoordinates> => {
+  const enableMessage = 'Please, enable geolocation in your settings!';
+  const deniedMeText = 'You denied me';
+
   return new Promise(async (resolve, reject) => {
     try {
       Geolocation.getCurrentPosition(
@@ -48,12 +53,15 @@ const getCoordinates = (): Promise<GeoCoordinates> => {
           resolve(coords);
         },
         error => {
+          if (error.code === 1 && isButtonPressed) {
+            Alert.alert(deniedMeText, enableMessage);
+          }
           reject(error);
         },
         {
-          enableHighAccuracy: false,
-          timeout: 10000,
-          maximumAge: 100000,
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 10000,
         },
       );
     } catch (error) {
@@ -62,10 +70,12 @@ const getCoordinates = (): Promise<GeoCoordinates> => {
   });
 };
 
-export const getPosition = async (): Promise<GeoCoordinates> => {
+export const getLocation = async (
+  isButtonPressed?: boolean,
+): Promise<GeoCoordinates> => {
   const isAllowed = await getPermission();
   if (!isAllowed) {
     return;
   }
-  return await getCoordinates();
+  return await getCoordinates(isButtonPressed);
 };

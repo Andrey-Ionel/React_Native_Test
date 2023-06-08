@@ -16,7 +16,11 @@ const App: () => React.ReactNode = () => {
           component={WeatherContainer}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Search" component={SearchLocationContainer} />
+        <Stack.Screen
+          name="Search"
+          component={SearchLocationContainer}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

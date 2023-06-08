@@ -1,3 +1,3 @@
-import { SearchLocation } from '../components/SearchLocation';
+import { SearchLocation } from '../components/searchLocation';
 
 export default SearchLocation;

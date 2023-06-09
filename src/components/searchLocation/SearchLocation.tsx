@@ -47,7 +47,7 @@ export const SearchLocation: FC = memo(
         !!cities?.length &&
         cities
           ?.filter(
-            town => town?.toLowerCase().indexOf(city.toLowerCase()) === 0,
+            town => town?.toLowerCase()?.indexOf(city?.toLowerCase()) === 0,
           )
           .slice(0, 20)) ||
       [];
@@ -76,16 +76,19 @@ export const SearchLocation: FC = memo(
     const getCityWeather = (): void => {
       setShowCityHint(false);
       getWeatherInTheCity(city).then(citiesData => {
-        if (citiesData?.list.length > 0) {
+        if (citiesData?.list?.length > 1) {
           toggleModal();
           setCitiesWeather(citiesData?.list);
+        }
+        if (citiesData?.list?.length === 1) {
+          handleWeatherByCityPress(citiesData.list?.[0]);
         }
         setShowNoWeather(true);
       });
     };
 
     const handleCityChange = (value: string) => {
-      const validCity = (value + '').replace(ONLY_WORDS, '');
+      const validCity = (value + '')?.replace(ONLY_WORDS, '');
       setCity(validCity);
       setShowCityHint(true);
       setShowNoWeather(false);
@@ -96,10 +99,10 @@ export const SearchLocation: FC = memo(
       setShowCityHint(false);
     };
 
-    const handleWeatherByCityPress = (item: WeatherData) => {
+    const handleWeatherByCityPress = (item?: WeatherData) => {
       getWeatherRequest({
-        longitude: item.coord.lon,
-        latitude: item.coord.lat,
+        longitude: item?.coord?.lon,
+        latitude: item?.coord?.lat,
       } as GeoCoordinates);
       navigation.goBack();
     };

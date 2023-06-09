@@ -59,4 +59,8 @@ export const styles = StyleSheet.create({
     width: 22,
     height: 18,
   },
+  separator: {
+    borderBottomColor: colors.separatorPrimary,
+    borderBottomWidth: 0.4,
+  },
 });

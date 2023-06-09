@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GeoCoordinates } from 'react-native-geolocation-service';
-import { WeatherData } from '../components/weather';
+import { WeatherData, WeatherDataByCity } from '../components/weather';
 import { normalizeCities } from './Normalizers';
 
 const appId = '439d4b804bc8187953eb36d2a8c26a02';
@@ -20,7 +20,7 @@ export const getWeather = async (
 
 export const getWeatherInTheCity = async (
   city: string,
-): Promise<WeatherData> => {
+): Promise<WeatherDataByCity> => {
   if (!city.length) {
     return;
   }

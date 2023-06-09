@@ -48,3 +48,7 @@ export interface WeatherData {
   name: string;
   cod: number;
 }
+
+export interface WeatherDataByCity {
+  list: WeatherData[];
+}

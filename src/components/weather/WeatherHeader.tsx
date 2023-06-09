@@ -2,28 +2,29 @@ import React, { memo, ReactNode } from 'react';
 import { TouchableOpacity, Text, View, Image } from 'react-native';
 
 import { getLocation } from '../../helpers/RadarManager';
-import { getWeather } from '../../commerceDataSource';
 import { HIT_SLOP_AREA, logError } from '../../helpers/common';
 import moment from 'moment';
 
 import { WeatherData } from './types';
+import { GeoCoordinates } from 'react-native-geolocation-service';
+
+import { styles } from './styles';
 
 import search from '../../assets/icons/search.png';
 import location from '../../assets/icons/locationIcon.png';
-import { styles } from './styles';
 
 interface WeatherHeaderProps {
   weatherData?: WeatherData;
-  setWeatherData: (
-    value: ((prevState: WeatherData) => WeatherData) | WeatherData,
-  ) => void;
+  getWeatherRequest: (
+    coordinates: GeoCoordinates,
+  ) => (dispatch: any) => Promise<void>;
 }
 
 export const WeatherHeader = memo(
   ({
     weatherData,
-    setWeatherData,
     navigation,
+    getWeatherRequest,
   }: WeatherHeaderProps): ReactNode => {
     const date = Date.now();
     const formattedDate = moment(date)
@@ -42,13 +43,7 @@ export const WeatherHeader = memo(
     const getCurrentLocation = (): void => {
       getLocation(true)
         .then(coordinates => {
-          getWeather(coordinates)
-            .then(weather => {
-              if (weather.name) {
-                setWeatherData(weather);
-              }
-            })
-            .catch(logError);
+          getWeatherRequest(coordinates);
         })
         .catch(logError);
     };

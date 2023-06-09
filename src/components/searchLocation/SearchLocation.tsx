@@ -1,5 +1,11 @@
 import React, { FC, memo, useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  FlatListProps,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { ScreenWrapper } from '../ScreenWrapper';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,98 +18,164 @@ import {
   getStorageValue,
   setStorageValue,
 } from '../../helpers/asyncStorage';
+import { CityByCountryModal } from '../../modals/CityByCountryModal';
+
+import { WeatherData } from '../weather';
+import { GeoCoordinates } from 'react-native-geolocation-service';
+
 import { styles } from './styles';
+import colors from '../../varibles/colors';
 
-export const SearchLocation: FC = memo(({ navigation }) => {
-  const [city, setCity] = useState('');
-  const [cities, setCities] = useState<string[]>([]);
-  const [showCityHint, setShowCityHint] = useState(true);
-  const dataList =
-    (!!city?.length &&
-      !!cities?.length &&
-      cities
-        ?.filter(town => town?.toLowerCase().indexOf(city.toLowerCase()) === 0)
-        .slice(0, 20)) ||
-    [];
+interface SearchLocationProps {
+  weather: WeatherData;
+  getWeatherRequest: (
+    coordinates: GeoCoordinates,
+  ) => (dispatch: any) => Promise<void>;
+}
 
-  const saveCities = async () => {
-    await getStorageValue(AsyncStorageKeys.citiesData).then(
-      async storageData => {
-        if (storageData?.length) {
-          setCities(JSON.parse(storageData));
-        } else {
-          getCities().then(async data => {
-            setCities(data);
-            await setStorageValue(AsyncStorageKeys.citiesData, data).catch(e =>
-              logError(e),
-            );
-          });
+export const SearchLocation: FC = memo(
+  ({ navigation, getWeatherRequest }: SearchLocationProps) => {
+    const [city, setCity] = useState('');
+    const [cities, setCities] = useState<string[]>([]);
+    const [showCityHint, setShowCityHint] = useState(true);
+    const [citiesWeather, setCitiesWeather] = useState<WeatherData[]>();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [showNoWeather, setShowNoWeather] = useState(false);
+
+    const dataList =
+      (!!city?.length &&
+        !!cities?.length &&
+        cities
+          ?.filter(
+            town => town?.toLowerCase().indexOf(city.toLowerCase()) === 0,
+          )
+          .slice(0, 20)) ||
+      [];
+
+    const saveCities = async () => {
+      await getStorageValue(AsyncStorageKeys.citiesData).then(
+        async storageData => {
+          if (storageData?.length) {
+            setCities(JSON.parse(storageData));
+          } else {
+            getCities().then(async data => {
+              setCities(data);
+              await setStorageValue(AsyncStorageKeys.citiesData, data).catch(
+                e => logError(e),
+              );
+            });
+          }
+        },
+      );
+    };
+
+    useEffect(() => {
+      saveCities().catch(e => logError(e));
+    }, []);
+
+    const getCityWeather = (): void => {
+      setShowCityHint(false);
+      getWeatherInTheCity(city).then(citiesData => {
+        if (citiesData?.list.length > 0) {
+          toggleModal();
+          setCitiesWeather(citiesData?.list);
         }
-      },
-    );
-  };
+        setShowNoWeather(true);
+      });
+    };
 
-  useEffect(() => {
-    saveCities().catch(e => logError(e));
-  }, []);
+    const handleCityChange = (value: string) => {
+      const validCity = (value + '').replace(ONLY_WORDS, '');
+      setCity(validCity);
+      setShowCityHint(true);
+      setShowNoWeather(false);
+    };
 
-  const getCityWeather = (): void => {
-    setShowCityHint(false);
-    getWeatherInTheCity(city).then(citiesData => {
-      console.log(31, 'zxc', 'citiesData', citiesData);
-    });
-  };
+    const onCitiesItemPress = (item: string) => () => {
+      setCity(item);
+      setShowCityHint(false);
+    };
 
-  const handleCityChange = (value: string) => {
-    const validCity = (value + '').replace(ONLY_WORDS, '');
-    setCity(validCity);
-    setShowCityHint(true);
-  };
+    const handleWeatherByCityPress = (item: WeatherData) => {
+      getWeatherRequest({
+        longitude: item.coord.lon,
+        latitude: item.coord.lat,
+      } as GeoCoordinates);
+      navigation.goBack();
+    };
 
-  const onCitiesItemPress = (item: string) => () => {
-    setCity(item);
-    setShowCityHint(false);
-  };
+    const toggleModal = () => {
+      setModalVisible(!modalVisible);
+      setShowNoWeather(false);
+    };
 
-  const renderCityItem = (item: string) => {
+    const renderCityItem = (item: string) => {
+      return (
+        <TouchableOpacity onPress={onCitiesItemPress(item)}>
+          <Text style={styles.item}>{item}</Text>
+        </TouchableOpacity>
+      );
+    };
+
+    const renderNoSearchResult = () => {
+      const noResultText = `No Results for "${city}"`;
+      return (
+        <View>
+          <Text style={styles.noResult}>{noResultText}</Text>
+        </View>
+      );
+    };
+
+    const renderNoWeather = () => {
+      const noResultText = `No Weather for "${city}"`;
+      return (
+        <View>
+          <Text style={styles.noResult}>{noResultText}</Text>
+        </View>
+      );
+    };
+
+    const keyExtractor: FlatListProps<string[]>['keyExtractor'] = (item, i) =>
+      item + i.toString();
+
+    const renderSeparator = () => {
+      return <View style={styles.separator} />;
+    };
+
     return (
-      <TouchableOpacity onPress={onCitiesItemPress(item)}>
-        <Text style={styles.item}>{item}</Text>
-      </TouchableOpacity>
+      <LinearGradient colors={colors.searchBackgroundGradient}>
+        <ScreenWrapper
+          screenStyle={styles.screenContainer}
+          needInSafeArea={true}
+          fixedComponentTop={
+            <SearchBar
+              city={city}
+              onCityChange={handleCityChange}
+              getCityWeather={getCityWeather}
+              navigation={navigation}
+            />
+          }>
+          {!dataList?.length && !!city?.length && renderNoSearchResult()}
+          {!!modalVisible && (
+            <CityByCountryModal
+              citiesWeather={citiesWeather}
+              onWeatherByCityPress={handleWeatherByCityPress}
+              modalVisible={modalVisible}
+              toggleModal={toggleModal}
+            />
+          )}
+          {showNoWeather && !modalVisible && !showCityHint && renderNoWeather()}
+          {showCityHint && (
+            <FlatList
+              keyExtractor={keyExtractor}
+              style={city ? styles.listData : styles.emptyList}
+              data={dataList}
+              renderItem={({ item }) => renderCityItem(item)}
+              ItemSeparatorComponent={renderSeparator}
+            />
+          )}
+        </ScreenWrapper>
+      </LinearGradient>
     );
-  };
-
-  const renderNoSearchResult = () => {
-    const noResultText = `No Results for "${city}"`;
-    return (
-      <View>
-        <Text style={styles.noResult}>{noResultText}</Text>
-      </View>
-    );
-  };
-
-  return (
-    <LinearGradient colors={['#fff', '#EBEBEB', '#CDCDCD', '#828C91']}>
-      <ScreenWrapper
-        screenStyle={styles.screenContainer}
-        needInSafeArea={true}
-        fixedComponentTop={
-          <SearchBar
-            city={city}
-            onCityChange={handleCityChange}
-            getCityWeather={getCityWeather}
-            navigation={navigation}
-          />
-        }>
-        {!dataList?.length && !!city?.length && renderNoSearchResult()}
-        {showCityHint && (
-          <FlatList
-            style={city ? styles.listData : styles.emptyList}
-            data={dataList}
-            renderItem={({ item }) => renderCityItem(item)}
-          />
-        )}
-      </ScreenWrapper>
-    </LinearGradient>
-  );
-});
+  },
+);

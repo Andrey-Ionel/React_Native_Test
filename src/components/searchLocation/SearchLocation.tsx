@@ -1,4 +1,11 @@
-import React, { FC, memo, useEffect, useState } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -25,6 +32,7 @@ import { GeoCoordinates } from 'react-native-geolocation-service';
 
 import { styles } from './styles';
 import colors from '../../varibles/colors';
+import { useDebounce } from '../../hooks/UseDebounce';
 
 interface SearchLocationProps {
   weather: WeatherData;
@@ -42,15 +50,22 @@ export const SearchLocation: FC = memo(
     const [modalVisible, setModalVisible] = useState(false);
     const [showNoWeather, setShowNoWeather] = useState(false);
 
-    const dataList =
-      (!!city?.length &&
-        !!cities?.length &&
-        cities
-          ?.filter(
-            town => town?.toLowerCase()?.indexOf(city?.toLowerCase()) === 0,
-          )
-          .slice(0, 20)) ||
-      [];
+    const debouncedValue = useDebounce(city, 500);
+
+    const dataList = useMemo(() => {
+      return (
+        (!!debouncedValue?.length &&
+          !!cities?.length &&
+          cities
+            ?.filter(
+              town =>
+                town?.toLowerCase()?.indexOf(debouncedValue?.toLowerCase()) ===
+                0,
+            )
+            .slice(0, 20)) ||
+        []
+      );
+    }, [cities, debouncedValue]);
 
     const saveCities = async () => {
       await getStorageValue(AsyncStorageKeys.citiesData).then(
@@ -87,12 +102,12 @@ export const SearchLocation: FC = memo(
       });
     };
 
-    const handleCityChange = (value: string) => {
+    const handleCityChange = useCallback((value: string) => {
       const validCity = (value + '')?.replace(ONLY_WORDS, '');
       setCity(validCity);
       setShowCityHint(true);
       setShowNoWeather(false);
-    };
+    }, []);
 
     const onCitiesItemPress = (item: string) => () => {
       setCity(item);
@@ -158,7 +173,10 @@ export const SearchLocation: FC = memo(
               navigation={navigation}
             />
           }>
-          {!dataList?.length && !!city?.length && renderNoSearchResult()}
+          {!dataList?.length &&
+            !!city?.length &&
+            !!debouncedValue.length &&
+            renderNoSearchResult()}
           {!!modalVisible && (
             <CityByCountryModal
               citiesWeather={citiesWeather}

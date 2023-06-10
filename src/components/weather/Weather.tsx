@@ -1,9 +1,11 @@
-import React, { FC, memo, useEffect } from 'react';
-import { View } from 'react-native';
+import React, { FC, memo, useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 
 import { ScreenWrapper } from '../ScreenWrapper';
 import { WeatherHeader } from './WeatherHeader';
 import LinearGradient from 'react-native-linear-gradient';
+import { DetailWeather } from './DetailWeather';
+import { WeatherBanner } from './WeatherBanner';
 
 import { getLocation } from '../../helpers/RadarManager';
 import { logError } from '../../helpers/common';
@@ -23,6 +25,7 @@ interface WeatherProps {
 
 export const Weather: FC = memo(
   ({ navigation, weather, getWeatherRequest }: WeatherProps) => {
+    const [showHourly, setShowHourly] = useState<boolean>(false);
     useEffect(() => {
       getLocation()
         .then(coordinates => {
@@ -30,6 +33,10 @@ export const Weather: FC = memo(
         })
         .catch(logError);
     }, [getWeatherRequest]);
+
+    const toggleDailyHourly = () => {
+      setShowHourly(!showHourly);
+    };
 
     return (
       <LinearGradient colors={colors.systemBackgroundGradient}>
@@ -43,7 +50,10 @@ export const Weather: FC = memo(
             />
           }
           needInSafeArea={true}>
-          <View />
+          <TouchableOpacity style={styles.wrapper} onPress={toggleDailyHourly}>
+            {!showHourly && <WeatherBanner weather={weather} />}
+          </TouchableOpacity>
+          {!showHourly && <DetailWeather weather={weather} />}
         </ScreenWrapper>
       </LinearGradient>
     );

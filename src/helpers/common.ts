@@ -13,3 +13,5 @@ export const HIT_SLOP_AREA = {
 };
 
 export const ONLY_WORDS = /[\d/,.|<>?;:`~!@#$%^&*()-=_+'"\\[\]{}]/gi;
+
+export const weatherIconURL = 'https://openweathermap.org/img/wn/';

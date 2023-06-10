@@ -8,6 +8,7 @@ export interface Theme {
 
   // Text
   textPrimary: string;
+  textSecondary: string;
 }
 
 export const lightMode: Theme = {
@@ -20,6 +21,7 @@ export const lightMode: Theme = {
 
   // Text
   textPrimary: '#fff',
+  textSecondary: '#141414',
 };
 
 export default lightMode;

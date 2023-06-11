@@ -7,6 +7,7 @@ import { styles } from './styles';
 
 interface TodayWeatherDetailProps {
   weather: WeatherData;
+  unit: Unit;
 }
 
 const weatherDescription = [
@@ -17,11 +18,15 @@ const weatherDescription = [
   { title: 'Sunset', key: 'sunset' },
 ];
 
-export const TodayWeatherDetail = ({ weather }: TodayWeatherDetailProps) => {
+export const TodayWeatherDetail = ({
+  weather,
+  unit,
+}: TodayWeatherDetailProps) => {
   const getDescriptionValue = (key: string) => {
+    const windMeasurement = unit === 'metric' ? ' m/s' : ' mph';
     switch (key) {
       case 'speed': {
-        return weather.wind[key] + ' m/s';
+        return weather.wind[key] + windMeasurement;
       }
       case 'humidity': {
         return weather.main[key] + '%';

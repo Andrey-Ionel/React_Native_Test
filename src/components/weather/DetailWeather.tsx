@@ -1,5 +1,5 @@
 import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { getDetailWeather } from '../../commerceDataSource';
 import { logError, weatherIconURL } from '../../helpers/common';
@@ -18,10 +18,12 @@ import moment from 'moment/moment';
 interface DetailWeatherProps {
   weather: WeatherData;
   showHourly: boolean;
+  unit: Unit;
+  setUnits: (unit: Unit, coordinates: GeoCoordinates) => void;
 }
 
 export const DetailWeather: FC = memo(
-  ({ weather, showHourly }: DetailWeatherProps): ReactNode => {
+  ({ weather, showHourly, unit, setUnits }: DetailWeatherProps): ReactNode => {
     const [weatherDetail, setWeatherDetail] = useState<WeatherDetailData>();
     const daily = weatherDetail?.daily?.slice(1);
     //@ts-ignore
@@ -31,19 +33,30 @@ export const DetailWeather: FC = memo(
 
     useEffect(() => {
       if (!!weather?.coord?.lon && !!weather?.coord?.lat) {
-        getDetailWeather({
-          longitude: weather?.coord?.lon,
-          latitude: weather?.coord?.lat,
-        } as GeoCoordinates)
+        getDetailWeather(
+          {
+            longitude: weather?.coord?.lon,
+            latitude: weather?.coord?.lat,
+          } as GeoCoordinates,
+          unit,
+        )
           .then(detailWeather => {
             setWeatherDetail(detailWeather);
           })
           .catch(logError);
       }
-    }, [weather?.coord?.lat, weather?.coord?.lon]);
+    }, [unit, weather?.coord?.lat, weather?.coord?.lon]);
 
     const keyExtractor = (item: WeatherDetailDaily, index: number) =>
       `${item?.dt || index}`;
+
+    const setCorrectUnit = () => {
+      const correctUnit = unit === 'metric' ? 'imperial' : 'metric';
+      setUnits(correctUnit, {
+        longitude: weather?.coord?.lon,
+        latitude: weather?.coord?.lat,
+      } as GeoCoordinates);
+    };
 
     const renderDailyItem = (item: WeatherDetailDaily) => {
       const iconId = item?.weather?.[0]?.icon || '';
@@ -93,14 +106,28 @@ export const DetailWeather: FC = memo(
       );
     };
 
+    const renderUnitsSwitcher = () => {
+      const switcherTitle = unit === 'metric' ? 'C' : 'F';
+      return (
+        <TouchableOpacity
+          style={styles.switcherContainer}
+          onPress={setCorrectUnit}>
+          <Text style={styles.switcherText}>{switcherTitle}</Text>
+        </TouchableOpacity>
+      );
+    };
+
     return (
-      <MultiCarousel
-        itemsPerPage={4}
-        items={(showHourly ? hourly : daily) || []}
-        dotStyle={styles.dotStyle}
-        renderItem={showHourly ? renderHourlyItem : renderDailyItem}
-        keyExtractor={keyExtractor}
-      />
+      <>
+        <MultiCarousel
+          itemsPerPage={4}
+          items={(showHourly ? hourly : daily) || []}
+          dotStyle={styles.dotStyle}
+          renderItem={showHourly ? renderHourlyItem : renderDailyItem}
+          keyExtractor={keyExtractor}
+        />
+        {renderUnitsSwitcher()}
+      </>
     );
   },
 );

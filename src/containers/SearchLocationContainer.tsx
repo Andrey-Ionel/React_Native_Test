@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 const mapStateToProps = state => {
   return {
     weather: state.weatherReducer.weather as WeatherData,
+    unit: state.weatherReducer.unit as Unit,
   };
 };
 

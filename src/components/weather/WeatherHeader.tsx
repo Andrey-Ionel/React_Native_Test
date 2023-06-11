@@ -17,7 +17,9 @@ interface WeatherHeaderProps {
   weatherData?: WeatherData;
   getWeatherRequest: (
     coordinates: GeoCoordinates,
+    unit: Unit,
   ) => (dispatch: any) => Promise<void>;
+  unit: Unit;
 }
 
 export const WeatherHeader = memo(
@@ -25,6 +27,7 @@ export const WeatherHeader = memo(
     weatherData,
     navigation,
     getWeatherRequest,
+    unit,
   }: WeatherHeaderProps): ReactNode => {
     const date = Date.now();
     const formattedDate = moment(date)
@@ -43,7 +46,7 @@ export const WeatherHeader = memo(
     const getCurrentLocation = (): void => {
       getLocation(true)
         .then(coordinates => {
-          getWeatherRequest(coordinates);
+          getWeatherRequest(coordinates, unit);
         })
         .catch(logError);
     };

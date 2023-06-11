@@ -38,11 +38,12 @@ interface SearchLocationProps {
   weather: WeatherData;
   getWeatherRequest: (
     coordinates: GeoCoordinates,
+    unit: Unit,
   ) => (dispatch: any) => Promise<void>;
 }
 
 export const SearchLocation: FC = memo(
-  ({ navigation, getWeatherRequest }: SearchLocationProps) => {
+  ({ navigation, getWeatherRequest, unit }: SearchLocationProps) => {
     const [city, setCity] = useState('');
     const [cities, setCities] = useState<string[]>([]);
     const [showCityHint, setShowCityHint] = useState(true);
@@ -115,10 +116,13 @@ export const SearchLocation: FC = memo(
     };
 
     const handleWeatherByCityPress = (item?: WeatherData) => {
-      getWeatherRequest({
-        longitude: item?.coord?.lon,
-        latitude: item?.coord?.lat,
-      } as GeoCoordinates);
+      getWeatherRequest(
+        {
+          longitude: item?.coord?.lon,
+          latitude: item?.coord?.lat,
+        } as GeoCoordinates,
+        unit,
+      );
       navigation.goBack();
     };
 

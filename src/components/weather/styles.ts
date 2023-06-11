@@ -107,4 +107,27 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
   },
+  loadingContainer: {
+    height: screenHeight - 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  switcherContainer: {
+    position: 'absolute',
+    bottom: -20,
+    right: 20,
+    borderRadius: 100,
+    height: 50,
+    width: 50,
+    backgroundColor: palette.textPrimary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  switcherText: {
+    fontFamily: fonts.gotham,
+    fontWeight: '400',
+    fontSize: 26,
+    letterSpacing: 1,
+    color: palette.textSecondary,
+  },
 });

@@ -45,6 +45,7 @@ export interface ScreenWrapperProps {
   hideWebHeader?: boolean;
   hideWebFooter?: boolean;
   fixedComponentTop?: React.ReactNode;
+  fixedComponentBottom?: JSX.Element | React.ReactNode;
 }
 
 export interface ScreenWrapperState {
@@ -63,6 +64,7 @@ export const ScreenWrapper: FC = memo(
     scroll,
     screenStyle,
     fixedComponentTop,
+    fixedComponentBottom,
     keyboardAvoidingViewProps,
   }: ScreenWrapperProps) => {
     const [safeAreaInsets] = useState<ScreenWrapperState>({
@@ -110,6 +112,7 @@ export const ScreenWrapper: FC = memo(
           <KeyboardAvoidingView {...keyboardAvoidingOptions}>
             {contents}
           </KeyboardAvoidingView>
+          {fixedComponentBottom}
         </Container>
       </View>
     );

@@ -2,11 +2,12 @@ import { Dimensions, StyleSheet } from 'react-native';
 import { fonts } from '../../varibles/fonts';
 import palette from '../../varibles/colors';
 
-const screenHeight = Dimensions.get('window').height;
+export const screenHeight = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
   screenContainer: {
     minHeight: screenHeight,
+    paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
@@ -62,17 +63,17 @@ export const styles = StyleSheet.create({
   },
   dotStyle: {
     marginHorizontal: 5,
+    marginTop: 20,
   },
   detailDailyContainer: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
-  detailDailyIcon: {
-    height: 100,
+  detailIcon: {
+    height: 50,
     width: 100,
   },
-  detailDailyText: {
+  detailText: {
     fontFamily: fonts.gotham,
     fontWeight: '300',
     fontSize: 20,
@@ -81,11 +82,29 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
-  detailDailyMaxText: {
+  detailDarkText: {
     color: palette.textSecondary,
     fontWeight: '500',
   },
   wrapper: {
     flex: 1,
+  },
+  detailTimeText: {
+    fontFamily: fonts.gotham,
+    fontWeight: '300',
+    fontSize: 15,
+    letterSpacing: 1,
+    color: palette.textPrimary,
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 5,
+  },
+  todayDetail: {
+    flex: 1,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 40,
   },
 });

@@ -15,6 +15,7 @@ import { GeoCoordinates } from 'react-native-geolocation-service';
 
 import colors from '../../varibles/colors';
 import { styles } from './styles';
+import { TodayWeatherDetail } from './TodayWeatherDetail';
 
 interface WeatherProps {
   weather: WeatherData;
@@ -42,6 +43,7 @@ export const Weather: FC = memo(
       <LinearGradient colors={colors.systemBackgroundGradient}>
         <ScreenWrapper
           screenStyle={styles.screenContainer}
+          scroll={true}
           fixedComponentTop={
             <WeatherHeader
               weatherData={weather}
@@ -49,11 +51,17 @@ export const Weather: FC = memo(
               getWeatherRequest={getWeatherRequest}
             />
           }
+          fixedComponentBottom={
+            <DetailWeather weather={weather} showHourly={showHourly} />
+          }
           needInSafeArea={true}>
           <TouchableOpacity style={styles.wrapper} onPress={toggleDailyHourly}>
-            {!showHourly && <WeatherBanner weather={weather} />}
+            {showHourly ? (
+              <TodayWeatherDetail weather={weather} />
+            ) : (
+              <WeatherBanner weather={weather} />
+            )}
           </TouchableOpacity>
-          {!showHourly && <DetailWeather weather={weather} />}
         </ScreenWrapper>
       </LinearGradient>
     );

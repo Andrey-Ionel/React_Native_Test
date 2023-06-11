@@ -5,19 +5,29 @@ import { getDetailWeather } from '../../commerceDataSource';
 import { logError, weatherIconURL } from '../../helpers/common';
 
 import { GeoCoordinates } from 'react-native-geolocation-service';
-import { WeatherData, WeatherDetailDaily, WeatherDetailData } from './types';
+import {
+  WeatherData,
+  WeatherDetailCurrent,
+  WeatherDetailDaily,
+  WeatherDetailData,
+} from './types';
 import MultiCarousel from '../MultiCarousel';
 import { styles } from './styles';
 import moment from 'moment/moment';
 
 interface DetailWeatherProps {
   weather: WeatherData;
+  showHourly: boolean;
 }
 
 export const DetailWeather: FC = memo(
-  ({ weather }: DetailWeatherProps): ReactNode => {
+  ({ weather, showHourly }: DetailWeatherProps): ReactNode => {
     const [weatherDetail, setWeatherDetail] = useState<WeatherDetailData>();
     const daily = weatherDetail?.daily?.slice(1);
+    //@ts-ignore
+    const hourly = weatherDetail?.hourly?.filter(
+      (hour, index) => !((index + 1) % 2),
+    );
 
     useEffect(() => {
       if (!!weather?.coord?.lon && !!weather?.coord?.lat) {
@@ -49,14 +59,36 @@ export const DetailWeather: FC = memo(
 
       return (
         <View style={styles.detailDailyContainer}>
-          <Image style={styles.detailDailyIcon} source={{ uri: iconUrl }} />
-          <Text style={styles.detailDailyText}>{formattedDate}</Text>
-          <Text
-            style={[
-              styles.detailDailyText,
-              styles.detailDailyMaxText,
-            ]}>{`${minTemp}°`}</Text>
-          <Text style={styles.detailDailyText}>{`${maxTemp}°`}</Text>
+          <Image style={styles.detailIcon} source={{ uri: iconUrl }} />
+          <Text style={styles.detailText}>{formattedDate}</Text>
+          <Text style={[styles.detailText, styles.detailDarkText]}>
+            {`${minTemp}°`}
+          </Text>
+          <Text style={styles.detailText}>{`${maxTemp}°`}</Text>
+        </View>
+      );
+    };
+
+    const renderHourlyItem = (item: WeatherDetailCurrent) => {
+      const iconId = item?.weather?.[0]?.icon || '';
+      const iconUrl = `${weatherIconURL}${iconId}@2x.png`;
+      const date = new Date(+item.dt * 1000 || 0);
+      const formattedDate = date.toLocaleString('en-US', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+      const temp = Math.round(item?.temp || 0);
+      const rainPercent = `${(item?.pop * 100).toFixed() || 0}%`;
+
+      return (
+        <View style={styles.detailDailyContainer}>
+          <Image style={styles.detailIcon} source={{ uri: iconUrl }} />
+          <Text style={styles.detailTimeText}>{formattedDate}</Text>
+          <Text style={[styles.detailText, styles.detailDarkText]}>
+            {rainPercent}
+          </Text>
+          <Text style={styles.detailText}>{`${temp}°`}</Text>
         </View>
       );
     };
@@ -64,10 +96,9 @@ export const DetailWeather: FC = memo(
     return (
       <MultiCarousel
         itemsPerPage={4}
-        style={styles.wrapper}
-        items={daily || []}
+        items={(showHourly ? hourly : daily) || []}
         dotStyle={styles.dotStyle}
-        renderItem={renderDailyItem}
+        renderItem={showHourly ? renderHourlyItem : renderDailyItem}
         keyExtractor={keyExtractor}
       />
     );

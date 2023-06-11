@@ -69,6 +69,7 @@ export interface WeatherDetailCurrent {
   wind_deg: number;
   wind_gust: number;
   weather: WeatherSky[];
+  pop: number;
 }
 
 export interface DailyTemp {

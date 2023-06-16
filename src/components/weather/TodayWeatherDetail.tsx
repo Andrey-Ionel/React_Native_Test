@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import React from 'react';
 
 import { WeatherData } from './types';
+import { Unit } from '../../store/types';
 
 import { styles } from './styles';
 

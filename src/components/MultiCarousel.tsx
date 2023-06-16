@@ -1,4 +1,10 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, {
+  LegacyRef,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Animated,
   FlatList,
@@ -295,7 +301,7 @@ const MultiCarousel = (props: MultiCarouselProps) => {
       <FlatList
         onLayout={handleContainerSizeChange}
         horizontal={true}
-        ref={scrollView}
+        ref={scrollView as LegacyRef<FlatList<any>> | undefined}
         decelerationRate={0}
         snapToAlignment={'start'}
         snapToInterval={snapToInterval}

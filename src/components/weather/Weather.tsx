@@ -1,5 +1,6 @@
 import React, { FC, memo, useEffect, useState } from 'react';
 import { Alert, TouchableOpacity } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
 
 import { ScreenWrapper } from '../ScreenWrapper';
 import { WeatherHeader } from './WeatherHeader';
@@ -12,13 +13,14 @@ import { getLocation } from '../../helpers/RadarManager';
 
 import { WeatherData } from './types';
 import { GeoCoordinates } from 'react-native-geolocation-service';
+import { Unit } from '../../store/types';
 
 import colors from '../../varibles/colors';
 import { styles } from './styles';
 import { TodayWeatherDetail } from './TodayWeatherDetail';
 import { logError } from '../../helpers/common';
 
-interface WeatherProps {
+export interface WeatherProps {
   weather: WeatherData;
   getWeatherRequest: (
     coordinates: GeoCoordinates,
@@ -26,16 +28,18 @@ interface WeatherProps {
   ) => (dispatch: any) => Promise<void>;
   setUnits: (unit: Unit, coordinates: GeoCoordinates) => void;
   error: string;
+  unit: Unit;
+  navigation: NavigationProp<ParamListBase>;
 }
 
-export const Weather: FC = memo(
+export const Weather: FC<WeatherProps> = memo(
   ({
-    navigation,
     weather,
     error,
     unit,
     setUnits,
     getWeatherRequest,
+    navigation,
   }: WeatherProps) => {
     const [showHourly, setShowHourly] = useState<boolean>(false);
     const [loading, setLoading] = useState(false);
@@ -44,7 +48,9 @@ export const Weather: FC = memo(
       setLoading(true);
       getLocation()
         .then(coordinates => {
-          getWeatherRequest(coordinates);
+          if (coordinates) {
+            getWeatherRequest(coordinates);
+          }
         })
         .catch(e => {
           setLoading(false);

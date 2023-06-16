@@ -46,6 +46,7 @@ export interface ScreenWrapperProps {
   hideWebFooter?: boolean;
   fixedComponentTop?: React.ReactNode;
   fixedComponentBottom?: JSX.Element | React.ReactNode;
+  children: any;
 }
 
 export interface ScreenWrapperState {
@@ -55,7 +56,7 @@ export interface ScreenWrapperState {
   right: number;
 }
 
-export const ScreenWrapper: FC = memo(
+export const ScreenWrapper: FC<ScreenWrapperProps> = memo(
   ({
     children,
     needInSafeArea,
@@ -66,7 +67,7 @@ export const ScreenWrapper: FC = memo(
     fixedComponentTop,
     fixedComponentBottom,
     keyboardAvoidingViewProps,
-  }: ScreenWrapperProps) => {
+  }) => {
     const [safeAreaInsets] = useState<ScreenWrapperState>({
       bottom: 0,
       left: 0,

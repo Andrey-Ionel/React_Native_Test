@@ -1,4 +1,4 @@
-import React, { FC, memo, ReactNode, useEffect, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { getDetailWeather } from '../../commerceDataSource';
@@ -12,9 +12,11 @@ import {
   WeatherDetailData,
 } from './types';
 import MultiCarousel from '../MultiCarousel';
-import { styles } from './styles';
 import moment from 'moment/moment';
 
+import { Unit } from '../../store/types';
+
+import { styles } from './styles';
 interface DetailWeatherProps {
   weather: WeatherData;
   showHourly: boolean;
@@ -22,13 +24,12 @@ interface DetailWeatherProps {
   setUnits: (unit: Unit, coordinates: GeoCoordinates) => void;
 }
 
-export const DetailWeather: FC = memo(
-  ({ weather, showHourly, unit, setUnits }: DetailWeatherProps): ReactNode => {
+export const DetailWeather: FC<DetailWeatherProps> = memo(
+  ({ weather, showHourly, unit, setUnits }) => {
     const [weatherDetail, setWeatherDetail] = useState<WeatherDetailData>();
     const daily = weatherDetail?.daily?.slice(1);
-    //@ts-ignore
     const hourly = weatherDetail?.hourly?.filter(
-      (hour, index) => !((index + 1) % 2),
+      (_, index) => !((index + 1) % 2),
     );
 
     useEffect(() => {

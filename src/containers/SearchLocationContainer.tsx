@@ -1,11 +1,11 @@
 import { SearchLocation } from '../components/searchLocation';
-import { WeatherData } from '../components/weather';
 import { getWeatherRequest } from '../store/actions';
 import { connect } from 'react-redux';
+import { Unit } from '../store/types';
+import { FC } from 'react';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: any) => {
   return {
-    weather: state.weatherReducer.weather as WeatherData,
     unit: state.weatherReducer.unit as Unit,
   };
 };
@@ -14,4 +14,7 @@ const mapDispatchToProps = {
   getWeatherRequest,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchLocation);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SearchLocation as FC);

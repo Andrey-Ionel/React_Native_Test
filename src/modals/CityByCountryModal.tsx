@@ -62,7 +62,7 @@ interface CityByCountryModalProps {
 const yourCountryText = 'Choose a city for your country';
 const yourCityText = 'Your city';
 
-export const CityByCountryModal: FC = ({
+export const CityByCountryModal: FC<CityByCountryModalProps> = ({
   citiesWeather,
   onWeatherByCityPress,
   modalVisible,
@@ -75,7 +75,7 @@ export const CityByCountryModal: FC = ({
   const keyExtractor: FlatListProps<WeatherData>['keyExtractor'] = (item, i) =>
     item.id + i.toString();
 
-  const onCityPress = item => () => {
+  const onCityPress = (item: WeatherData) => () => {
     onWeatherByCityPress(item);
     toggleModal?.();
   };

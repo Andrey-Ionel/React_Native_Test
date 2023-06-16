@@ -1,5 +1,6 @@
-import React, { memo, ReactNode } from 'react';
+import React, { FC, memo } from 'react';
 import { TouchableOpacity, Text, View, Image } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
 
 import { getLocation } from '../../helpers/RadarManager';
 import { HIT_SLOP_AREA, logError } from '../../helpers/common';
@@ -7,6 +8,7 @@ import moment from 'moment';
 
 import { WeatherData } from './types';
 import { GeoCoordinates } from 'react-native-geolocation-service';
+import { Unit } from '../../store/types';
 
 import { styles } from './styles';
 
@@ -20,15 +22,11 @@ interface WeatherHeaderProps {
     unit: Unit,
   ) => (dispatch: any) => Promise<void>;
   unit: Unit;
+  navigation: NavigationProp<ParamListBase>;
 }
 
-export const WeatherHeader = memo(
-  ({
-    weatherData,
-    navigation,
-    getWeatherRequest,
-    unit,
-  }: WeatherHeaderProps): ReactNode => {
+export const WeatherHeader: FC<WeatherHeaderProps> = memo(
+  ({ weatherData, navigation, getWeatherRequest, unit }) => {
     const date = Date.now();
     const formattedDate = moment(date)
       ?.format('LLLL')
@@ -46,7 +44,9 @@ export const WeatherHeader = memo(
     const getCurrentLocation = (): void => {
       getLocation(true)
         .then(coordinates => {
-          getWeatherRequest(coordinates, unit);
+          if (coordinates) {
+            getWeatherRequest(coordinates, unit);
+          }
         })
         .catch(logError);
     };

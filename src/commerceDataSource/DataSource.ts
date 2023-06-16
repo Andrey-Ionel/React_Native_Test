@@ -7,12 +7,14 @@ import {
 } from '../components/weather';
 import { normalizeCities } from './Normalizers';
 
+import { Unit } from '../store/types';
+
 const appId = '439d4b804bc8187953eb36d2a8c26a02';
 
 export const getWeather = async (
   coordinates: GeoCoordinates,
   unit = 'metric' as Unit,
-): Promise<WeatherData> => {
+): Promise<WeatherData | undefined> => {
   const { latitude, longitude } = coordinates;
   if (!latitude || !longitude) {
     return;
@@ -25,7 +27,7 @@ export const getWeather = async (
 
 export const getWeatherInTheCity = async (
   city: string,
-): Promise<WeatherDataByCity> => {
+): Promise<WeatherDataByCity | undefined> => {
   if (!city.length) {
     return;
   }
@@ -45,7 +47,7 @@ export const getCities = async (): Promise<any> => {
 export const getDetailWeather = async (
   coordinates: GeoCoordinates,
   unit = 'metric' as Unit,
-): Promise<WeatherDetailData> => {
+): Promise<WeatherDetailData | undefined> => {
   const { latitude, longitude } = coordinates;
   if (!latitude || !longitude) {
     return;

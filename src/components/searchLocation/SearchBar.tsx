@@ -1,5 +1,6 @@
-import React, { FC, memo, ReactNode } from 'react';
+import React, { FC, memo } from 'react';
 import { Image, TextInput, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
 
 import { HIT_SLOP_AREA } from '../../helpers/common';
 import { styles } from './styles';
@@ -11,15 +12,11 @@ interface SearchBarProps {
   city: string;
   onCityChange: (value: string) => void;
   getCityWeather: () => void;
+  navigation: NavigationProp<ParamListBase>;
 }
 
-export const SearchBar: FC = memo(
-  ({
-    city,
-    onCityChange,
-    getCityWeather,
-    navigation,
-  }: SearchBarProps): ReactNode => {
+export const SearchBar: FC<SearchBarProps> = memo(
+  ({ city, onCityChange, getCityWeather, navigation }) => {
     const goBack = () => {
       navigation?.goBack();
     };

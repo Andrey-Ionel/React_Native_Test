@@ -42,7 +42,9 @@ const getPermission = async (): Promise<boolean> => {
   }
 };
 
-const getCoordinates = (isButtonPressed?: boolean): Promise<GeoCoordinates> => {
+const getCoordinates = (
+  isButtonPressed?: boolean,
+): Promise<GeoCoordinates | undefined> => {
   const enableMessage = 'Please, enable geolocation in your settings!';
   const deniedMeText = 'You denied me';
 
@@ -72,7 +74,7 @@ const getCoordinates = (isButtonPressed?: boolean): Promise<GeoCoordinates> => {
 
 export const getLocation = async (
   isButtonPressed?: boolean,
-): Promise<GeoCoordinates> => {
+): Promise<GeoCoordinates | undefined> => {
   const isAllowed = await getPermission();
   if (!isAllowed) {
     return;

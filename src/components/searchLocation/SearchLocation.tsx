@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
 
 import { ScreenWrapper } from '../ScreenWrapper';
 import LinearGradient from 'react-native-linear-gradient';
@@ -29,21 +30,23 @@ import { CityByCountryModal } from '../../modals/CityByCountryModal';
 
 import { WeatherData } from '../weather';
 import { GeoCoordinates } from 'react-native-geolocation-service';
+import { Unit } from '../../store/types';
 
 import { styles } from './styles';
 import colors from '../../varibles/colors';
 import { useDebounce } from '../../hooks/UseDebounce';
 
 interface SearchLocationProps {
-  weather: WeatherData;
   getWeatherRequest: (
     coordinates: GeoCoordinates,
     unit: Unit,
   ) => (dispatch: any) => Promise<void>;
+  unit: Unit;
+  navigation: NavigationProp<ParamListBase>;
 }
 
-export const SearchLocation: FC = memo(
-  ({ navigation, getWeatherRequest, unit }: SearchLocationProps) => {
+export const SearchLocation: FC<SearchLocationProps> = memo(
+  ({ navigation, getWeatherRequest, unit }) => {
     const [city, setCity] = useState('');
     const [cities, setCities] = useState<string[]>([]);
     const [showCityHint, setShowCityHint] = useState(true);
@@ -92,7 +95,7 @@ export const SearchLocation: FC = memo(
     const getCityWeather = (): void => {
       setShowCityHint(false);
       getWeatherInTheCity(city).then(citiesData => {
-        if (citiesData?.list?.length > 1) {
+        if (citiesData?.list?.length && citiesData?.list?.length > 1) {
           toggleModal();
           setCitiesWeather(citiesData?.list);
         }
@@ -157,7 +160,7 @@ export const SearchLocation: FC = memo(
       );
     };
 
-    const keyExtractor: FlatListProps<string[]>['keyExtractor'] = (item, i) =>
+    const keyExtractor: FlatListProps<string>['keyExtractor'] = (item, i) =>
       item + i.toString();
 
     const renderSeparator = () => {
@@ -183,7 +186,7 @@ export const SearchLocation: FC = memo(
             renderNoSearchResult()}
           {!!modalVisible && (
             <CityByCountryModal
-              citiesWeather={citiesWeather}
+              citiesWeather={citiesWeather || []}
               onWeatherByCityPress={handleWeatherByCityPress}
               modalVisible={modalVisible}
               toggleModal={toggleModal}

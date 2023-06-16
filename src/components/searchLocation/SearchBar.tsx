@@ -11,7 +11,7 @@ import backArrow from '../../assets/icons/backArrow.png';
 interface SearchBarProps {
   city: string;
   onCityChange: (value: string) => void;
-  getCityWeather: () => void;
+  getCityWeather: (citiItem?: string) => () => void;
   navigation: NavigationProp<ParamListBase>;
 }
 
@@ -31,9 +31,11 @@ export const SearchBar: FC<SearchBarProps> = memo(
           placeholder={'Enter city'}
           value={city}
           onChangeText={onCityChange}
-          onSubmitEditing={getCityWeather}
+          onSubmitEditing={getCityWeather(city)}
         />
-        <TouchableOpacity hitSlop={HIT_SLOP_AREA} onPress={getCityWeather}>
+        <TouchableOpacity
+          hitSlop={HIT_SLOP_AREA}
+          onPress={getCityWeather(city)}>
           <Image style={styles.searchIcon} source={searchIcon} />
         </TouchableOpacity>
       </View>

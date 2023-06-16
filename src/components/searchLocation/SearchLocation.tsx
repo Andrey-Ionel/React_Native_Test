@@ -92,18 +92,20 @@ export const SearchLocation: FC<SearchLocationProps> = memo(
       saveCities().catch(e => logError(e));
     }, []);
 
-    const getCityWeather = (): void => {
+    const getCityWeather = (citiItem?: string) => () => {
       setShowCityHint(false);
-      getWeatherInTheCity(city).then(citiesData => {
-        if (citiesData?.list?.length && citiesData?.list?.length > 1) {
-          toggleModal();
-          setCitiesWeather(citiesData?.list);
-        }
-        if (citiesData?.list?.length === 1) {
-          handleWeatherByCityPress(citiesData.list?.[0]);
-        }
-        setShowNoWeather(true);
-      });
+      getWeatherInTheCity(citiItem?.length ? citiItem : city).then(
+        citiesData => {
+          if (citiesData?.list?.length && citiesData?.list?.length > 1) {
+            toggleModal();
+            setCitiesWeather(citiesData?.list);
+          }
+          if (citiesData?.list?.length === 1) {
+            handleWeatherByCityPress(citiesData.list?.[0]);
+          }
+          setShowNoWeather(true);
+        },
+      );
     };
 
     const handleCityChange = useCallback((value: string) => {
@@ -113,9 +115,9 @@ export const SearchLocation: FC<SearchLocationProps> = memo(
       setShowNoWeather(false);
     }, []);
 
-    const onCitiesItemPress = (item: string) => () => {
+    const onCitiesItemPress = (item: string) => async () => {
       setCity(item);
-      setShowCityHint(false);
+      getCityWeather(item)();
     };
 
     const handleWeatherByCityPress = (item?: WeatherData) => {

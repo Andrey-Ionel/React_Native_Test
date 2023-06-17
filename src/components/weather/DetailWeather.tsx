@@ -86,19 +86,22 @@ export const DetailWeather: FC<DetailWeatherProps> = memo(
     const renderHourlyItem = (item: WeatherDetailCurrent) => {
       const iconId = item?.weather?.[0]?.icon || '';
       const iconUrl = `${weatherIconURL}${iconId}@2x.png`;
-      const date = new Date(+item.dt * 1000 || 0);
-      const formattedDate = date.toLocaleString('en-US', {
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      });
+      const date = new Date(+item.dt * 1000 || 0)
+        .toLocaleString('en-US', {
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric',
+        })
+        .split(' ');
+      const hourlyDate =
+        date.length > 2 ? date.slice(3, 4).join(' ') : date.join(' ');
       const temp = Math.round(item?.temp || 0);
       const rainPercent = `${(item?.pop * 100).toFixed() || 0}%`;
 
       return (
         <View style={styles.detailDailyContainer}>
           <Image style={styles.detailIcon} source={{ uri: iconUrl }} />
-          <Text style={styles.detailTimeText}>{formattedDate}</Text>
+          <Text style={styles.detailTimeText}>{hourlyDate}</Text>
           <Text style={[styles.detailText, styles.detailDarkText]}>
             {rainPercent}
           </Text>

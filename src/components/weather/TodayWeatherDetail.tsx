@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import React from 'react';
 
-import { WeatherData } from './types';
+import { WeatherData, WeatherRegion } from './types';
 import { Unit } from '../../store/types';
 
 import { styles } from './styles';
@@ -23,8 +23,18 @@ export const TodayWeatherDetail = ({
   weather,
   unit,
 }: TodayWeatherDetailProps) => {
+  const windMeasurement = unit === 'metric' ? ' m/s' : ' mph';
   const getDescriptionValue = (key: string) => {
-    const windMeasurement = unit === 'metric' ? ' m/s' : ' mph';
+    const date = new Date(+weather?.sys[key as keyof WeatherRegion] * 1000 || 0)
+      .toLocaleString('en-US', {
+        hour12: true,
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+      .split(' ');
+    const setAndRiseDate =
+      date.length > 2 ? date.slice(3, 4).join(' ') : date.join(' ');
+
     switch (key) {
       case 'speed': {
         return weather.wind[key] + windMeasurement;
@@ -36,18 +46,10 @@ export const TodayWeatherDetail = ({
         return weather.main[key] + ' hPa';
       }
       case 'sunrise': {
-        return new Date(+weather.sys[key] * 1000 || 0).toLocaleString('en-US', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        return setAndRiseDate;
       }
       case 'sunset': {
-        return new Date(+weather.sys[key] * 1000 || 0).toLocaleString('en-US', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        return setAndRiseDate;
       }
       default:
         return '';

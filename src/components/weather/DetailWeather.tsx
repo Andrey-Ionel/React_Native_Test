@@ -86,15 +86,8 @@ export const DetailWeather: FC<DetailWeatherProps> = memo(
     const renderHourlyItem = (item: WeatherDetailCurrent) => {
       const iconId = item?.weather?.[0]?.icon || '';
       const iconUrl = `${weatherIconURL}${iconId}@2x.png`;
-      const date = new Date(+item.dt * 1000 || 0)
-        .toLocaleString('en-US', {
-          hour12: true,
-          hour: 'numeric',
-          minute: 'numeric',
-        })
-        .split(' ');
-      const hourlyDate =
-        date.length > 2 ? date.slice(3, 4).join(' ') : date.join(' ');
+      const date = new Date(+item.dt * 1000 || 0);
+      const hourlyDate = moment(date).format('HH:mm');
       const temp = Math.round(item?.temp || 0);
       const rainPercent = `${(item?.pop * 100).toFixed() || 0}%`;
 

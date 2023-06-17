@@ -3,6 +3,7 @@ import React from 'react';
 
 import { WeatherData, WeatherRegion } from './types';
 import { Unit } from '../../store/types';
+import moment from 'moment';
 
 import { styles } from './styles';
 
@@ -25,15 +26,10 @@ export const TodayWeatherDetail = ({
 }: TodayWeatherDetailProps) => {
   const windMeasurement = unit === 'metric' ? ' m/s' : ' mph';
   const getDescriptionValue = (key: string) => {
-    const date = new Date(+weather?.sys[key as keyof WeatherRegion] * 1000 || 0)
-      .toLocaleString('en-US', {
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      })
-      .split(' ');
-    const setAndRiseDate =
-      date.length > 2 ? date.slice(3, 4).join(' ') : date.join(' ');
+    const date = new Date(
+      +weather?.sys[key as keyof WeatherRegion] * 1000 || 0,
+    );
+    const setAndRiseDate = moment(date).format('HH:mm');
 
     switch (key) {
       case 'speed': {
